@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://dwwieyxh2cqay"]
+
+[ext_resource type="Script" path="res://2048/scripts/NumberDisplay.gd" id="1_w38gr"]
+
+[node name="NumberDisplay" type="Node2D"]
+script = ExtResource("1_w38gr")

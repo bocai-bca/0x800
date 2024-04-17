@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://baek1dy1vffgu"]
+
+[ext_resource type="Script" path="res://2048/scripts/ScoreDisplay.gd" id="1_23pyp"]
+
+[node name="ScoreDisplay" type="Node2D"]
+script = ExtResource("1_23pyp")
