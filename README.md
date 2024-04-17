@@ -1,7 +1,7 @@
 You can download the game instead of source file in Release.
 
 # How to control
-Use AWSD or Arrow keys to move blocks.
+Use AWSD or Arrow keys to move blocks.  
 Use mouse click the big button what displaying the score to start a new game.
 
 # The gameplay
