@@ -16,12 +16,17 @@ class PaletteData:
 		return 4 * In_Vec2i.x + In_Vec2i.y
 	static func index_to_vec2i(In_Index:int)-> Vector2i: #一维版面存储索引转二维版面坐标
 		return Vector2i(In_Index / 4, In_Index % 4)
+	func clean_stacked_tag()-> void: #清除自身中被标记为刚合成标签的槽位
+		for slot in Value:
+			slot.StackedOnThisTime = false
 
 #版面槽位元素，包含了槽位数字缓存和槽位节点引用
 class PaletteSlotData:
 	var Number:int
 	var BlockNode:Block
+	var StackedOnThisTime:bool #用于阻止在不该连续合成的时候连续合成
 	func _init(In_Number:int, In_Block:Block = null)-> void:
+		StackedOnThisTime = false
 		Number = In_Number
 		if (In_Block != null):
 			BlockNode = In_Block
@@ -85,16 +90,18 @@ static func source_block_moving(In_SourceBlockPos:Vector2i, In_Palette:PaletteDa
 		Main.INPUT_DIRECTION.RIGHT:
 			direction_vec = Vector2i.RIGHT
 	var point_pos:Vector2i = In_SourceBlockPos
-	var source_number:int = In_Palette.Value[PaletteData.vec2i_to_index(In_SourceBlockPos)].Number
+	var source_slot:PaletteSlotData = In_Palette.Value[PaletteData.vec2i_to_index(In_SourceBlockPos)]
 	while (true):
 		point_pos += direction_vec
 		if (point_pos.clamp(Vector2i(0, 0), Vector2i(3, 3)) != point_pos):
 			point_pos -= direction_vec
 			break
-		var point_number:int = In_Palette.Value[PaletteData.vec2i_to_index(point_pos)].Number
-		if (point_number == 0): #为空格
+		var point_slot:PaletteSlotData = In_Palette.Value[PaletteData.vec2i_to_index(point_pos)]
+		if (point_slot.Number == 0): #为空格
 			continue
-		elif (point_number == source_number): #为源数字
+		elif (point_slot.Number == source_slot.Number): #为源数字
+			if ((point_slot.StackedOnThisTime or source_slot.StackedOnThisTime) and not Main.CanComboStacking): #如果这个格子刚被合成过，并且当前热度不能连续合成
+				point_pos -= direction_vec
 			break
 		else: #为其他数字
 			point_pos -= direction_vec
@@ -161,12 +168,14 @@ func apply_moving(source_pos:Vector2i, target_pos:Vector2i)-> void:
 	var target_block_node:Block = RealPalette.Value[target_index].BlockNode #获得终点节点引用
 	source_block_node.TargetPos = PosList[target_pos.y][target_pos.x] #设定起点节点的移动目的地为对应坐标
 	RealPalette.Value[target_index].Number = RealPalette.Value[source_index].Number #将终点的数字设为起点的
-	if (target_block_node != null):
-		source_block_node.z_index = 1
-		source_block_node.DieAfterMove = true
+	if (target_block_node != null): #如果目的地有节点
+		RealPalette.Value[target_index].StackedOnThisTime = true
+		Main.OneTickStackCount += 1 #记录一次合成
+		source_block_node.z_index = 1 #让起点节点的图层往里一级
+		source_block_node.DieAfterMove = true #让起点节点移动完就死掉
 		source_block_node.move_finished.connect(target_block_node.add_effect)
 		RealPalette.Value[target_index].Number += 1
-	else:
+	else: #如果目的地没有节点
 		RealPalette.Value[target_index].BlockNode = RealPalette.Value[source_index].BlockNode #将终点的节点引用设为起点的
 	RealPalette.Value[source_index].Number = 0
 	RealPalette.Value[source_index].BlockNode = null
