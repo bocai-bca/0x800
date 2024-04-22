@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://cuph2xwpxikf3"]
+[gd_scene load_steps=12 format=3 uid="uid://cuph2xwpxikf3"]
 
 [ext_resource type="Script" path="res://2048/scripts/Main.gd" id="1_5thdn"]
 [ext_resource type="Texture2D" uid="uid://bxbnx83el7oi1" path="res://2048/textures/white.png" id="2_42bvx"]
@@ -9,6 +9,8 @@
 [ext_resource type="Texture2D" uid="uid://cwoly7xuewjwx" path="res://2048/textures/scorelabel_1.png" id="6_f1p03"]
 [ext_resource type="PackedScene" uid="uid://baek1dy1vffgu" path="res://2048/scenes/ScoreDisplay.tscn" id="8_jljkw"]
 [ext_resource type="Texture2D" uid="uid://70uyacurpmdi" path="res://2048/textures/high_score_text.png" id="9_nnnm4"]
+[ext_resource type="PackedScene" uid="uid://dqyg8q6fjelnx" path="res://2048/scenes/HeatBar.tscn" id="10_ga7pf"]
+[ext_resource type="PackedScene" uid="uid://bk5ru1uwi230q" path="res://2048/scenes/Blocks.tscn" id="11_phg7y"]
 
 [node name="Screen" type="Node2D"]
 z_index = 100
@@ -55,9 +57,20 @@ texture_pressed = ExtResource("6_f1p03")
 
 [node name="HighScore" type="Sprite2D" parent="."]
 z_index = 300
-position = Vector2(0, 242)
+position = Vector2(0, 274)
 scale = Vector2(0.15, 0.15)
 texture = ExtResource("9_nnnm4")
 
 [node name="ScoreDisplay" parent="HighScore" instance=ExtResource("8_jljkw")]
 position = Vector2(0, 192)
+scale = Vector2(0.75, 0.75)
+
+[node name="HeatBar" parent="." instance=ExtResource("10_ga7pf")]
+z_index = 500
+position = Vector2(-40, 215)
+scale = Vector2(0.15, 0.15)
+
+[node name="TipBlock" parent="HeatBar" instance=ExtResource("11_phg7y")]
+z_index = 500
+position = Vector2(1113.33, 0)
+scale = Vector2(6.66667e-05, 6.66667e-05)
