@@ -1,16 +1,15 @@
-You can download the game instead of source file in Release.
+你可以在Releases中下载游戏程序而非源文件。  
 
-# How to control
-Use AWSD or Arrow keys to move blocks.  
-Use mouse click the big button what displaying the score to start a new game.
+# 如何控制
+使用AWSD或方向键以用键盘移动方块，也可以通过鼠标划动来移动方块。  
+用鼠标点击游戏画面上方显示分数的大按钮以重新开局。  
 
-# The gameplay
-All the numbers are showing as hexadecimal.  
-There'll spawn a new block after each move. Usually the number of new block is the minimum number on screen, so the game goal was changed from stacking larger number to decrease the difference between max and min as possible for surviving better.  
-  
-Let's just call current minimum number as `N`.  
-Sometimes the new number will be `N - 1`. Game will spawning `N - 1` more and more if them keep existing.  
-They will increase challenge for you to maintain order of situation. But don't be afraid, there won't appear `N - 2`.  
-  
-Very easier than vanilla 2048.  
-Try how large number and how high score you can get!  
+# 玩法
+游戏中的所有数字都是以十六进制显示的。  
+每次移动后都将在随机位置产生一个新方块。通常新方块的数字是当前屏幕上的最小数字，在方块版面的右下角会有一个方块指示下次生成新方块是什么数字。所以游戏目标与原版2048有所不同的是这个游戏的在于尽力缩小版面上最大数与最小数的差距，以更容易存活下来。  
+
+在方块版面下方有一个看起来像汞体温计的进度条，我们称之为热度条。当热度条触顶时，新生成的数字会减1，以至于让版面的数字种类变多、整体数字大小降级，这是给玩家维护版面有序整洁的挑战，搞不好可能因此游戏结束。  
+玩家每次移动都会升高热度，而进行方块合成可以降低热度。一次操作合成的方块越多，热度降低得也越多，而且是指数级的。当热度大过一定程度时，会进入连续合成状态，玩家可以观察到热度条上的一个隔断，这个隔断就表示达到连续合成状态所需要的热度。进入连续合成状态时，热度条会闪烁，且热度越高闪烁越快。在温度低的时候试试把相同的方块堆在一起，然后在热度高的时候一网打尽，这样温度就可以骤降。  
+
+由于玩法的改变，它比原版2048会简单不少。  
+试试你能得到多大的数字或者多高的分数吧！  
