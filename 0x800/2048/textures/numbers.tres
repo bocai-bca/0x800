@@ -1,4 +1,4 @@
-[gd_resource type="SpriteFrames" load_steps=17 format=3 uid="uid://jfjhru6aiirc"]
+[gd_resource type="SpriteFrames" load_steps=18 format=3 uid="uid://jfjhru6aiirc"]
 
 [ext_resource type="Texture2D" uid="uid://clwv5eqc0fvxi" path="res://2048/textures/numbers/0.png" id="1_u7fmx"]
 [ext_resource type="Texture2D" uid="uid://duy6wmcgmij68" path="res://2048/textures/numbers/1.png" id="2_0qxhc"]
@@ -16,6 +16,7 @@
 [ext_resource type="Texture2D" uid="uid://bjpio76gug71e" path="res://2048/textures/numbers/D.png" id="14_oa4rq"]
 [ext_resource type="Texture2D" uid="uid://40uarkwmab0v" path="res://2048/textures/numbers/E.png" id="15_perx3"]
 [ext_resource type="Texture2D" uid="uid://d0h4jfp38ktyt" path="res://2048/textures/numbers/F.png" id="16_0bskr"]
+[ext_resource type="Texture2D" uid="uid://v1q23ei5plrn" path="res://2048/textures/numbers/x.png" id="17_1u37j"]
 
 [resource]
 animations = [{
@@ -67,6 +68,9 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": ExtResource("16_0bskr")
+}, {
+"duration": 1.0,
+"texture": ExtResource("17_1u37j")
 }],
 "loop": false,
 "name": &"default",

@@ -74,3 +74,6 @@ scale = Vector2(0.15, 0.15)
 z_index = 500
 position = Vector2(1113.33, 0)
 scale = Vector2(6.66667e-05, 6.66667e-05)
+
+[node name="Marker2D" type="Marker2D" parent="."]
+position = Vector2(-10, -20)

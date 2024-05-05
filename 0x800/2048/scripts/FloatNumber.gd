@@ -1,39 +1,33 @@
-extends Node2D
-class_name ScoreDisplay
+extends ScoreDisplay
+class_name FloatNumber
 
-var TOTAL_MAX_WIDTH:float = 720.0 #默认缩放状态下允许的最大宽度
-const NUMBER_WIDTH:float = 320.0 #一个数字在默认缩放状态下的宽度
-const NODE_SPACING:float = 64.0 #每两个数位节点在默认缩放状态下的间隔
+const CharX:CompressedTexture2D = preload("res://2048/textures/numbers/x.png")
 
-const NumbersFrames:SpriteFrames = preload("res://2048/textures/numbers.tres")
+var Number:int
+var Motion:Vector2
+var LifeTimer:float = 0.0
 
-var NumberCache:int #以十进制记录当前数字的缓存
+func _ready() -> void:
+	set_position(Vector2.from_angle(randf()) * randf_range(-128.0, 128.0))
+	Motion = -1.0 * get_position() + Vector2(0.0, -384.0)
+	set_position(get_position() + Vector2(0.0, 64.0))
+	set_number(Number)
 
-static func char_to_frame(hex_num:String)->int:
-	match hex_num:
-		"0": return 0
-		"1": return 1
-		"2": return 2
-		"3": return 3
-		"4": return 4
-		"5": return 5
-		"6": return 6
-		"7": return 7
-		"8": return 8
-		"9": return 9
-		"A": return 10
-		"B": return 11
-		"C": return 12
-		"D": return 13
-		"E": return 14
-		"F": return 15
-		"x": return 16
-	return 0
+func _process(delta: float) -> void:
+	LifeTimer += delta
+	set_scale(smoothstep(0.0, 1.0, LifeTimer) * Vector2(0.5, 0.5))
+	set_position(get_position() + Motion * delta)
+	Motion = Motion.move_toward(Vector2(0.0, 1024.0), delta * 256.0)
+	if (get_position().y >= 384.0):
+		queue_free()
+	if (fmod(LifeTimer, 0.6) > 0.3):
+		set_modulate(Color(0.75, 0.75, 0.75, 0.5))
+	else:
+		set_modulate(Color(0.25, 0.25, 0.25, 0.5))
 
-#输入十进制数字，然后显示为十六进制
-func set_number(number_dec:int)->void:
-	NumberCache = number_dec #保存输入到缓存
+func set_number(number_dec: int) -> void:
 	var number_hex:String = String.num_int64(number_dec, 16, true) #转换到十六进制
+	number_hex = "x" + number_hex #在十六进制数开头加一个x
 	var number_count:int = number_hex.length() #十六进制数字的位数
 	var children_count:int = get_child_count() #获取子节点数量，并用于计数
 	#数位节点居中与分配帧号

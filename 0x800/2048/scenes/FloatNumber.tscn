@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://cn3wb8dsus4ne"]
+
+[ext_resource type="Script" path="res://2048/scripts/FloatNumber.gd" id="1_oj2lf"]
+
+[node name="FloatNumber" type="Node2D"]
+z_index = 800
+scale = Vector2(1e-05, 1e-05)
+script = ExtResource("1_oj2lf")

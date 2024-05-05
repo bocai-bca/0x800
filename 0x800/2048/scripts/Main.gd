@@ -55,6 +55,8 @@ static var Node_HighScore:Sprite2D
 static var Node_HeatBar:Sprite2D
 static var Node_TipBlock:Node2D
 
+const Prefab_FloatNumber:Resource = preload("res://2048/scenes/FloatNumber.tscn")
+
 var MouseInput_StartPos:Vector2 = Vector2(0.0, 0.0)
 var MouseInput_IsLastTickClicking:bool = false
 var MouseInput_IsNeedReclick:bool = false
@@ -106,8 +108,8 @@ func _process(delta:float)->void:
 					TheMinNumberShouldSpawn = new_number
 					Node_TipBlock.add_effect(true, TheMinNumberShouldSpawn) #更新提示方块
 				if (not HadSpawnLowLevelBlock): #如果在温度触顶后还没有生成N-1
-					TheMinNumberShouldSpawn -= 1
-					new_number -= 1 #新数是当前版面最小数减一
+					TheMinNumberShouldSpawn = clampi(TheMinNumberShouldSpawn - 1, 1, TheMaxNumberInPalette)
+					new_number = TheMinNumberShouldSpawn #新数是当前版面最小数减一
 					HadSpawnLowLevelBlock = true #标记为已生成，因为待会儿就会生成了
 				else: #如果已生成过
 					#if (randi() % 4 == 0): #四分之一的概率会生成N+1
@@ -156,6 +158,8 @@ func _process(delta:float)->void:
 					for source_block in source_block_list:
 						var move_active:Vector2i = BlocksArea.source_block_moving(source_block, Node_BlocksArea.RealPalette, input_direction)
 						Node_BlocksArea.apply_moving(source_block, move_active)
+				if (OneTickStackCount >= 2):
+					spawn_float_number(OneTickStackCount)
 				Heating = clampi(Heating - int(float(OneTickStackCount) ** 1.6 * 5.0) + 8, 0, HEATING_MAX)
 				Node_HeatBar.TargetDegree = float(Heating) / float(HEATING_MAX)
 				Node_BlocksArea.RealPalette.clean_stacked_tag()
@@ -164,11 +168,16 @@ func _notification(what:int)-> void:
 	if (what == NOTIFICATION_WM_CLOSE_REQUEST or what == NOTIFICATION_CRASH):
 		try_save_score()
 
-func score_update(score:int)-> void:
+func spawn_float_number(stack_count: int) -> void:
+	var float_number_ins:Node2D = Prefab_FloatNumber.instantiate()
+	float_number_ins.Number = stack_count
+	add_child(float_number_ins)
+
+func score_update(score:int) -> void:
 	Score += score
 	Node_ScoreLabel.emit_signal("update_score", Score)
 
-func start_new_game()-> void:
+func start_new_game() -> void:
 	ColorOffset =fmod(randf(), 1.0)
 	GlobalState = GLOBAL_STATE.STARTING
 	Node_BlocksArea.emit_signal("blocks_clear")
@@ -190,14 +199,14 @@ func start_new_game()-> void:
 	HadSpawnLowLevelBlock = true
 
 #尝试保存分数，可以自由调用。如果当前游戏分数大于内存中的存档最高分，则会保存分数并写入硬盘
-func try_save_score()-> void:
+func try_save_score() -> void:
 	if (Score > GameSave.get("HighScore", 2147483647)):
 		print("save score!")
 		GameSave["HighScore"] = Score
 		load_save(true)
 
 #单次鼠标处理，直接引用动态变量
-func mouse_handle_once(delta: float)-> void:
+func mouse_handle_once(delta: float) -> void:
 	if (Input.is_action_pressed("mouse_lmb")): #如果按下了左键
 		var PosNow: Vector2 = get_viewport().get_mouse_position()
 		if (MouseInput_IsLastTickClicking): #并且上一刻也按了左键
@@ -216,12 +225,12 @@ func mouse_handle_once(delta: float)-> void:
 		MouseInput_IsLastTickClicking = false #记录本刻没按左键，以供后续使用
 
 #信号连接。当热度条触顶动画播放完毕时呼叫
-func on_heatbar_reset()-> void:
+func on_heatbar_reset() -> void:
 	Heating = 0
 	Node_HeatBar.TargetDegree = 0.0
 	if (TheMinNumberShouldSpawn > 1):
 		HadSpawnLowLevelBlock = false
-		Node_TipBlock.add_effect(true, TheMinNumberShouldSpawn - 1) #更新提示方块
+		Node_TipBlock.add_effect(true, clampi(TheMinNumberShouldSpawn - 1, 1, TheMaxNumberInPalette)) #更新提示方块
 
 static func node_toward_color(target_node:Node, target_color:Color, delta:float)-> bool:
 	var from_color:Color = target_node.get_self_modulate()
