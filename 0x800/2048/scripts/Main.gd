@@ -54,6 +54,7 @@ static var Node_ScoreLabel:Node2D
 static var Node_HighScore:Sprite2D
 static var Node_HeatBar:Sprite2D
 static var Node_TipBlock:Node2D
+static var Node_SfxManager:Node
 
 const Prefab_FloatNumber:Resource = preload("res://2048/scenes/FloatNumber.tscn")
 
@@ -65,6 +66,7 @@ var MouseInput_Output:Vector2 = Vector2(0.0, 0.0)
 func _ready()->void:
 	SELF = self
 	load_save()
+	Node_SfxManager = get_node("SfxManager")
 	Node_Background = get_node("Background")
 	Node_BlocksArea = get_node("BlocksArea")
 	Node_ScoreLabel = get_node("ScoreLabel")
@@ -105,6 +107,8 @@ func _process(delta:float)->void:
 			if (Node_BlocksArea.query_blocks_are_all_move_finished()):
 				var new_number: int = BlocksArea.get_min_number(Node_BlocksArea.RealPalette) #设定新数为版面最小数
 				if (new_number != TheMinNumberShouldSpawn): #如果当前版面最小数与提示方块不符
+					if (TheMinNumberShouldSpawn < new_number):
+						SfxManager.add_queue(SfxManager.SOUND_LIST.PianoUp)
 					TheMinNumberShouldSpawn = new_number
 					Node_TipBlock.add_effect(true, TheMinNumberShouldSpawn) #更新提示方块
 				if (not HadSpawnLowLevelBlock): #如果在温度触顶后还没有生成N-1

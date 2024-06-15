@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://cuph2xwpxikf3"]
+[gd_scene load_steps=16 format=3 uid="uid://cuph2xwpxikf3"]
 
 [ext_resource type="Script" path="res://2048/scripts/Main.gd" id="1_5thdn"]
 [ext_resource type="Texture2D" uid="uid://bxbnx83el7oi1" path="res://2048/textures/white.png" id="2_42bvx"]
@@ -11,6 +11,10 @@
 [ext_resource type="Texture2D" uid="uid://70uyacurpmdi" path="res://2048/textures/high_score_text.png" id="9_nnnm4"]
 [ext_resource type="PackedScene" uid="uid://dqyg8q6fjelnx" path="res://2048/scenes/HeatBar.tscn" id="10_ga7pf"]
 [ext_resource type="PackedScene" uid="uid://bk5ru1uwi230q" path="res://2048/scenes/Blocks.tscn" id="11_phg7y"]
+[ext_resource type="AudioStream" uid="uid://c3bpadi7omd2m" path="res://2048/sounds/bubble.wav" id="12_iwpyx"]
+[ext_resource type="Script" path="res://2048/scripts/SfxManager.gd" id="12_y1umk"]
+[ext_resource type="AudioStream" uid="uid://gjo8u38038rw" path="res://2048/sounds/piano_down.wav" id="14_llnng"]
+[ext_resource type="AudioStream" uid="uid://dfqviptafwtrg" path="res://2048/sounds/piano_up.wav" id="15_f0wch"]
 
 [node name="Screen" type="Node2D"]
 z_index = 100
@@ -77,3 +81,23 @@ scale = Vector2(6.66667e-05, 6.66667e-05)
 
 [node name="Marker2D" type="Marker2D" parent="."]
 position = Vector2(-10, -20)
+
+[node name="SfxManager" type="Node" parent="."]
+script = ExtResource("12_y1umk")
+
+[node name="Bubble" type="AudioStreamPlayer" parent="SfxManager"]
+stream = ExtResource("12_iwpyx")
+mix_target = 1
+max_polyphony = 5
+
+[node name="PianoDown" type="AudioStreamPlayer" parent="SfxManager"]
+stream = ExtResource("14_llnng")
+volume_db = -12.0
+mix_target = 1
+max_polyphony = 3
+
+[node name="PianoUp" type="AudioStreamPlayer" parent="SfxManager"]
+stream = ExtResource("15_f0wch")
+volume_db = -12.0
+mix_target = 1
+max_polyphony = 3

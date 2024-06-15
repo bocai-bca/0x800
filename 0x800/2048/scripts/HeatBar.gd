@@ -48,6 +48,7 @@ func _process(delta: float) -> void:
 		PLAYING_STATE.FADE_TO_EMPTY:
 			NowAlpha = clampf(NowAlpha - delta, 0.0, 1.0)
 			if (NowAlpha == 0.0):
+				SfxManager.add_queue(SfxManager.SOUND_LIST.PianoDown)
 				Line.set_modulate(Color(Line.get_modulate(), 1.0))
 				PlayingState = PLAYING_STATE.SMOOTH_STEP
 				NowDegree = 0.0

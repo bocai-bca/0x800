@@ -78,6 +78,7 @@ func add_effect(add_number:bool = true, override_number: int = 0)-> void:
 			now_number = override_number
 		else:
 			now_number = Number + 1
+			SfxManager.add_queue(SfxManager.SOUND_LIST.Bubble)
 		change_number(now_number)
 		if (now_number > Main.TheMaxNumberInPalette):
 			Main.TheMaxNumberInPalette = now_number
