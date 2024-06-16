@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://cuph2xwpxikf3"]
+[gd_scene load_steps=21 format=3 uid="uid://cuph2xwpxikf3"]
 
 [ext_resource type="Script" path="res://2048/scripts/Main.gd" id="1_5thdn"]
 [ext_resource type="Texture2D" uid="uid://bxbnx83el7oi1" path="res://2048/textures/white.png" id="2_42bvx"]
@@ -8,7 +8,10 @@
 [ext_resource type="Script" path="res://2048/scripts/ScoreLabel.gd" id="5_rek2j"]
 [ext_resource type="Texture2D" uid="uid://cwoly7xuewjwx" path="res://2048/textures/scorelabel_1.png" id="6_f1p03"]
 [ext_resource type="PackedScene" uid="uid://baek1dy1vffgu" path="res://2048/scenes/ScoreDisplay.tscn" id="8_jljkw"]
+[ext_resource type="Script" path="res://2048/scripts/SoundButton.gd" id="9_kqv7c"]
 [ext_resource type="Texture2D" uid="uid://70uyacurpmdi" path="res://2048/textures/high_score_text.png" id="9_nnnm4"]
+[ext_resource type="Texture2D" uid="uid://b8n5hpbc7pg2f" path="res://2048/textures/sound_button_0.png" id="9_of304"]
+[ext_resource type="Texture2D" uid="uid://rro0rg7ww01c" path="res://2048/textures/sound_button_1.png" id="10_g3ex4"]
 [ext_resource type="PackedScene" uid="uid://dqyg8q6fjelnx" path="res://2048/scenes/HeatBar.tscn" id="10_ga7pf"]
 [ext_resource type="PackedScene" uid="uid://bk5ru1uwi230q" path="res://2048/scenes/Blocks.tscn" id="11_phg7y"]
 [ext_resource type="AudioStream" uid="uid://c3bpadi7omd2m" path="res://2048/sounds/bubble.wav" id="12_iwpyx"]
@@ -60,6 +63,31 @@ texture_normal = ExtResource("5_etnr4")
 texture_pressed = ExtResource("6_f1p03")
 
 [node name="ScoreDisplay" parent="ScoreLabel" instance=ExtResource("8_jljkw")]
+
+[node name="SoundButton" type="Node2D" parent="."]
+z_index = 400
+z_as_relative = false
+position = Vector2(123, 288)
+scale = Vector2(0.25, 0.25)
+script = ExtResource("9_kqv7c")
+
+[node name="Button" type="TextureButton" parent="SoundButton"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -175.5
+offset_top = -105.0
+offset_right = 175.5
+offset_bottom = 105.0
+grow_horizontal = 2
+grow_vertical = 2
+keep_pressed_outside = true
+texture_normal = ExtResource("9_of304")
+texture_pressed = ExtResource("10_g3ex4")
+
+[node name="Icon" type="Sprite2D" parent="SoundButton"]
 
 [node name="HighScore" type="Sprite2D" parent="."]
 z_index = 300

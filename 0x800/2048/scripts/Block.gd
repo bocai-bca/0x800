@@ -6,7 +6,6 @@ signal move_finished()
 
 const MOVE_SPEED:float = 12288.0
 const ZOOM_SPEED:float = 9.0
-const COLOR_FADING_SPEED:float = 2.0
 const ADD_EFFECT_SPEED:float = 25.0
 var TargetPos:Vector2 = Vector2.ZERO
 var TargetColor:Color
@@ -21,6 +20,9 @@ var IsDeathing: bool = false #标记方块是否死亡，用于播放死亡动�
 #由BlocksArea赋值
 var Node_Body:Sprite2D
 var Node_Number:Node2D
+
+func _ready()-> void:
+	Main.SELF.global_switch_dark_color.connect(on_switch_sound)
 
 func _process(delta:float)-> void:
 	if (IsDeathing):
@@ -42,11 +44,13 @@ func _process(delta:float)-> void:
 		death()
 	#过渡颜色更新
 	var body_color:Color = Node_Body.get_self_modulate()
-	Node_Body.set_self_modulate(body_color.lerp(TargetColor, delta * COLOR_FADING_SPEED))
+	#Node_Body.set_self_modulate(body_color.lerp(TargetColor, delta * Main.COLOR_FADING_SPEED))
+	Main.node_toward_color(Node_Body, TargetColor, delta)
 	#Node_Body.set_self_modulate(TargetColor)
 	#print("body: ", body_color, " ", Node_Body.get_self_modulate())
 	var text_color:Color = Node_Number.get_modulate()
-	Node_Number.set_modulate(text_color.lerp(NumberTargetColor, delta * COLOR_FADING_SPEED))
+	#Node_Number.set_modulate(text_color.lerp(NumberTargetColor, delta * Main.COLOR_FADING_SPEED))
+	Main.node_toward_color_with_children(Node_Number, NumberTargetColor, delta)
 	#Node_Number.set_modulate(NumberTargetColor)
 	#print("text: ", text_color, " ", Node_Number.get_self_modulate())
 	pass
@@ -96,3 +100,7 @@ func reinit()-> void:
 	#set_scale(Vector2(0.0, 0.0))
 	IsSpawnFinished = true
 	set_process(false)
+
+func on_switch_sound()-> void:
+	TargetColor = Main.make_color(Number)
+	NumberTargetColor = Main.make_text_color(TargetColor)

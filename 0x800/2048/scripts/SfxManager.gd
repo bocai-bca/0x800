@@ -35,6 +35,7 @@ static var DohPlayAgo:float = 0.0
 const DohPlayInterval:float = 0.01
 
 func _process(delta:float)-> void:
+	var _0:bool = Main.IsSoundEnable
 	BubblePlayAgo = move_toward(BubblePlayAgo, BubblePlayInterval, delta)
 	PianoUpPlayAgo = move_toward(PianoUpPlayAgo, PianoUpPlayInterval, delta)
 	PianoDownPlayAgo = move_toward(PianoDownPlayAgo, PianoDownPlayInterval, delta)
@@ -43,26 +44,31 @@ func _process(delta:float)-> void:
 	if (BubbleQueue >= 1 and BubblePlayAgo >= BubblePlayInterval):
 		BubblePlayAgo = 0.0
 		BubbleQueue -= 1
-		Bubble.set_pitch_scale(randf_range(0.7, 1.3))
-		Bubble.play()
+		if (_0):
+			Bubble.set_pitch_scale(randf_range(0.7, 1.3))
+			Bubble.play()
 	if (PianoUpQueue >= 1 and PianoUpPlayAgo >= PianoUpPlayInterval):
 		PianoUpPlayAgo = 0.0
 		PianoUpQueue -= 1
-		PianoUp.play()
+		if (_0):
+			PianoUp.play()
 	if (PianoDownQueue >= 1 and PianoDownPlayAgo >= PianoDownPlayInterval):
 		PianoDownPlayAgo = 0.0
 		PianoDownQueue -= 1
-		PianoDown.play()
+		if (_0):
+			PianoDown.play()
 	if (AlarmQueue >= 1 and AlarmPlayAgo >= AlarmPlayInterval):
 		AlarmPlayAgo = 0.0
 		AlarmQueue -= 1
-		Alarm.set_pitch_scale((float(Main.Heating) / float(Main.HEATING_MAX)) / 2.0 + 1.0)
-		Alarm.play()
+		if (_0):
+			Alarm.set_pitch_scale((float(Main.Heating) / float(Main.HEATING_MAX)) / 2.0 + 1.0)
+			Alarm.play()
 	if (DohQueue >= 1 and DohPlayAgo >= DohPlayInterval):
 		DohPlayAgo = 0.0
 		DohQueue -= 1
-		Doh.set_pitch_scale(randf_range(0.7, 1.3))
-		Doh.play()
+		if (_0):
+			Doh.set_pitch_scale(randf_range(0.7, 1.3))
+			Doh.play()
 
 static func add_queue(sound_id:int)-> void:
 	match sound_id:

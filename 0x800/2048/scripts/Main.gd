@@ -7,6 +7,7 @@ static var GameSave:Dictionary = {
 }
 
 signal add_score(score:int)
+signal global_switch_dark_color()
 
 enum INPUT_DIRECTION{
 	UP = 0,
@@ -30,6 +31,7 @@ static var TheMaxNumberInPalette:int = 0
 #static var TheMinNumberShouldSpawn:int #允许生成的最小数标准，有时为了提升难度会生成比最小数标准小1的数字，无论何时，不会生成比最小数标准小1更小的数。最小数标准会在版面只存在高于最小数标准时更新为版面的最小数
 static var TheMinNumberShouldSpawn: int #允许生成的最小数标准，每次温度触顶后会降低1级
 static var TipBlockNumber: int #缓存显示在提示方块上的数字，用于检查更新
+static var IsSoundEnable: bool #声音是否开启
 
 static var GlobalState:int
 enum GLOBAL_STATE{
@@ -55,6 +57,7 @@ static var Node_HighScore:Sprite2D
 static var Node_HeatBar:Sprite2D
 static var Node_TipBlock:Node2D
 static var Node_SfxManager:Node
+static var Node_SoundButton:Node2D
 
 const Prefab_FloatNumber:Resource = preload("res://2048/scenes/FloatNumber.tscn")
 
@@ -63,8 +66,10 @@ var MouseInput_IsLastTickClicking:bool = false
 var MouseInput_IsNeedReclick:bool = false
 var MouseInput_Output:Vector2 = Vector2(0.0, 0.0)
 
-func _ready()->void:
+func _enter_tree()-> void:
 	SELF = self
+
+func _ready()->void:
 	load_save()
 	Node_SfxManager = get_node("SfxManager")
 	Node_Background = get_node("Background")
@@ -72,15 +77,18 @@ func _ready()->void:
 	Node_ScoreLabel = get_node("ScoreLabel")
 	Node_HighScore = get_node("HighScore")
 	Node_HeatBar = get_node("HeatBar")
+	Node_SoundButton = get_node("SoundButton")
 	Node_TipBlock = get_node("HeatBar/TipBlock")
 	Node_TipBlock.TargetPos = Node_TipBlock.get_position()
 	Node_TipBlock.Node_Body = get_node("HeatBar/TipBlock/Body")
 	Node_TipBlock.Node_Number = get_node("HeatBar/TipBlock/NumberDisplay")
 	Node_HeatBar.heat_bar_touched_top.connect(on_heatbar_reset)
 	Node_ScoreLabel.get_node("RestartButton").pressed.connect(start_new_game)
+	Node_SoundButton.get_node("Button").pressed.connect(sound_switch)
 	add_score.connect(score_update)
 	Node_HighScore.get_node("ScoreDisplay").set_number(GameSave.get("HighScore", 0))
 	Score = 0
+	IsSoundEnable = true
 	start_new_game()
 
 func _process(delta:float)->void:
@@ -93,6 +101,9 @@ func _process(delta:float)->void:
 	var tag_3:bool = node_toward_color_with_children(Node_HighScore, text_color, delta * UI_COLOR_FADINT_RATE)
 	if (GlobalState != GLOBAL_STATE.GAME_OVER):
 		tag_2 = Node_ScoreLabel.color_update(delta * UI_COLOR_FADINT_RATE, scorelabel_color, text_color)
+		#tag_2 = true
+		#node_toward_color(Node_ScoreLabel.Node_Button, scorelabel_color, delta * UI_COLOR_FADINT_RATE)
+		#node_toward_color_with_children(Node_ScoreLabel.Node_Score, text_color, delta * UI_COLOR_FADINT_RATE)
 	match GlobalState: #匹配全局状态
 		GLOBAL_STATE.STARTING: #全局状态-新游戏启动动画
 			Node_TipBlock.set_scale(Node_TipBlock.get_scale().move_toward(Vector2.ZERO, delta * Block.ZOOM_SPEED))
@@ -174,6 +185,12 @@ func _notification(what:int)-> void:
 	if (what == NOTIFICATION_WM_CLOSE_REQUEST or what == NOTIFICATION_CRASH):
 		try_save_score()
 
+func sound_switch()-> void:
+	IsSoundEnable = !IsSoundEnable
+	emit_signal("global_switch_dark_color") #主要是让不会每刻更改颜色的节点刷新一下存储的颜色，其余的就是更改颜色生成方法输出的颜色
+	BackgroundTargetColor = make_color(Main.TheMaxNumberInPalette, 0.25)
+	BlocksAreaTargetColor = Main.make_text_color(BackgroundTargetColor)
+
 func spawn_float_number(stack_count: int) -> void:
 	var float_number_ins:Node2D = Prefab_FloatNumber.instantiate()
 	float_number_ins.Number = stack_count
@@ -184,7 +201,7 @@ func score_update(score:int) -> void:
 	Node_ScoreLabel.emit_signal("update_score", Score)
 
 func start_new_game() -> void:
-	ColorOffset =fmod(randf(), 1.0)
+	ColorOffset = fmod(randf(), 1.0)
 	GlobalState = GLOBAL_STATE.STARTING
 	Node_BlocksArea.emit_signal("blocks_clear")
 	Node_BlocksArea.RealPalette = BlocksArea.PaletteData.new()
@@ -267,12 +284,22 @@ static func node_toward_color_with_children(target_node:Node, target_color:Color
 
 static func make_color(number:int, saturation:float = 0.5)-> Color:
 	number = clampi(number, 0, number)
-	return Color.from_hsv(fmod(float(number) / 17.0 + ColorOffset, 1.0), saturation, 1.0)
+	if (IsSoundEnable):
+		return Color.from_hsv(fmod(float(number) / 17.0 + ColorOffset, 1.0), saturation, 1.0)
+	else:
+		#return Color.from_hsv(fmod(float(number) / 17.0 + ColorOffset, 1.0), saturation - 0.25, 0.4)
+		var x:float = fmod(float(number) / 17.0 + ColorOffset, 1.0) #自变量
+		var a:float = 0.5 #中值
+		var b:float = 0.75 #振幅
+		var v:float = absf((fmod(2.0 * x, 2.0) - 1.0) * b) + a - 0.5 * b
+		return Color.from_hsv(0, 0, v)
 
 static func make_text_color(background_color:Color)-> Color:
 	if (background_color.v > 0.5):
 		return background_color.darkened(0.5)
 	else:
+		if (!IsSoundEnable):
+			return background_color.darkened(0.75)
 		return background_color.lightened(0.5)
 
 #读取存档，引入true时表示从Main中的游戏数据变量写入至存档
