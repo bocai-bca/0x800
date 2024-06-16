@@ -107,18 +107,19 @@ func _process(delta:float)->void:
 			if (Node_BlocksArea.query_blocks_are_all_move_finished()):
 				var new_number: int = BlocksArea.get_min_number(Node_BlocksArea.RealPalette) #设定新数为版面最小数
 				if (new_number != TheMinNumberShouldSpawn): #如果当前版面最小数与提示方块不符
-					if (TheMinNumberShouldSpawn < new_number):
-						SfxManager.add_queue(SfxManager.SOUND_LIST.PianoUp)
 					TheMinNumberShouldSpawn = new_number
 					Node_TipBlock.add_effect(true, TheMinNumberShouldSpawn) #更新提示方块
+					SfxManager.add_queue(SfxManager.SOUND_LIST.Doh)
 				if (not HadSpawnLowLevelBlock): #如果在温度触顶后还没有生成N-1
 					TheMinNumberShouldSpawn = clampi(TheMinNumberShouldSpawn - 1, 1, TheMaxNumberInPalette)
 					new_number = TheMinNumberShouldSpawn #新数是当前版面最小数减一
+					Node_TipBlock.add_effect(true, TheMinNumberShouldSpawn) #更新提示方块
+					SfxManager.add_queue(SfxManager.SOUND_LIST.Doh)
 					HadSpawnLowLevelBlock = true #标记为已生成，因为待会儿就会生成了
-				else: #如果已生成过
+				#else: #如果已生成过
 					#if (randi() % 4 == 0): #四分之一的概率会生成N+1
 						#new_number += 1
-					pass
+					#pass
 				Node_BlocksArea.new_block(BlocksArea.get_empty_pos(Node_BlocksArea.RealPalette), clampi(new_number, 1, TheMaxNumberInPalette)) #生成新方块
 				GlobalState = GLOBAL_STATE.SPAWNING #更改全局状态为方块生成中
 				NumberDownRoundCounter -= 1
@@ -134,6 +135,7 @@ func _process(delta:float)->void:
 				else:
 					try_save_score()
 					GlobalState = GLOBAL_STATE.GAME_OVER
+					SfxManager.add_queue(SfxManager.SOUND_LIST.PianoDown)
 		GLOBAL_STATE.WAITING: #全局状态-等待玩家输入
 			var input_direction:int = -1
 			var mouse_angle:float = rad_to_deg(MouseInput_Output.angle())
@@ -201,6 +203,7 @@ func start_new_game() -> void:
 	TipBlockNumber = 1
 	Node_TipBlock.reinit()
 	HadSpawnLowLevelBlock = true
+	SfxManager.add_queue(SfxManager.SOUND_LIST.PianoUp)
 
 #尝试保存分数，可以自由调用。如果当前游戏分数大于内存中的存档最高分，则会保存分数并写入硬盘
 func try_save_score() -> void:

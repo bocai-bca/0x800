@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://cuph2xwpxikf3"]
+[gd_scene load_steps=18 format=3 uid="uid://cuph2xwpxikf3"]
 
 [ext_resource type="Script" path="res://2048/scripts/Main.gd" id="1_5thdn"]
 [ext_resource type="Texture2D" uid="uid://bxbnx83el7oi1" path="res://2048/textures/white.png" id="2_42bvx"]
@@ -15,6 +15,8 @@
 [ext_resource type="Script" path="res://2048/scripts/SfxManager.gd" id="12_y1umk"]
 [ext_resource type="AudioStream" uid="uid://gjo8u38038rw" path="res://2048/sounds/piano_down.wav" id="14_llnng"]
 [ext_resource type="AudioStream" uid="uid://dfqviptafwtrg" path="res://2048/sounds/piano_up.wav" id="15_f0wch"]
+[ext_resource type="AudioStream" uid="uid://31ul4jynl7er" path="res://2048/sounds/alarm.wav" id="16_hcvf2"]
+[ext_resource type="AudioStream" uid="uid://difm3uyjwecu5" path="res://2048/sounds/doh.wav" id="17_j8qg7"]
 
 [node name="Screen" type="Node2D"]
 z_index = 100
@@ -101,3 +103,15 @@ stream = ExtResource("15_f0wch")
 volume_db = -12.0
 mix_target = 1
 max_polyphony = 3
+
+[node name="Alarm" type="AudioStreamPlayer" parent="SfxManager"]
+stream = ExtResource("16_hcvf2")
+volume_db = -12.0
+mix_target = 1
+max_polyphony = 5
+
+[node name="Doh" type="AudioStreamPlayer" parent="SfxManager"]
+stream = ExtResource("17_j8qg7")
+volume_db = -12.0
+mix_target = 1
+max_polyphony = 10

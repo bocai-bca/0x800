@@ -26,10 +26,15 @@ func _ready() -> void:
 	FlashingTimer = 0.0
 
 func _process(delta: float) -> void:
+	var is_line_lighting:bool = false
+	if (Line.modulate == COLOR_LIGHT):
+		is_line_lighting = true
 	Line.set_modulate(COLOR_MIN.lerp(COLOR_BOUND, float(clampi(Main.Heating, 0, Main.COMBO_STACK_HEATING)) / float(Main.COMBO_STACK_HEATING)))
 	if (Main.Heating >= Main.COMBO_STACK_HEATING):
 		var a: int = clampi(Main.HEATING_MAX - Main.Heating, 2, Main.HEATING_MAX)
-		if (fmod(FlashingTimer, a) <= float(a / 2)):
+		if (fmod(FlashingTimer, a) <= float(a / 2.0)):
+			if (!is_line_lighting and PlayingState == PLAYING_STATE.SMOOTH_STEP):
+				SfxManager.add_queue(SfxManager.SOUND_LIST.Alarm)
 			Line.set_modulate(COLOR_LIGHT)
 		FlashingTimer = fmod(FlashingTimer + delta * 10.0, 4 * a)
 	match PlayingState:
@@ -45,10 +50,10 @@ func _process(delta: float) -> void:
 				emit_signal("heat_bar_touched_top")
 				PlayingState = PLAYING_STATE.FADE_TO_EMPTY
 				NowAlpha = 1.0
+				SfxManager.clear_queue(SfxManager.SOUND_LIST.Alarm)
 		PLAYING_STATE.FADE_TO_EMPTY:
 			NowAlpha = clampf(NowAlpha - delta, 0.0, 1.0)
 			if (NowAlpha == 0.0):
-				SfxManager.add_queue(SfxManager.SOUND_LIST.PianoDown)
 				Line.set_modulate(Color(Line.get_modulate(), 1.0))
 				PlayingState = PLAYING_STATE.SMOOTH_STEP
 				NowDegree = 0.0

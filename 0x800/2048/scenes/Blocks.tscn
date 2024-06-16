@@ -1,13 +1,13 @@
 [gd_scene load_steps=4 format=3 uid="uid://bk5ru1uwi230q"]
 
-[ext_resource type="Script" path="res://2048/scripts/Block.gd" id="1_d0viq"]
+[ext_resource type="Script" path="res://2048/scripts/Block.gd" id="1_d0vsd"]
 [ext_resource type="Texture2D" uid="uid://vwt7eky78mc1" path="res://2048/textures/block.png" id="2_6jnej"]
 [ext_resource type="PackedScene" uid="uid://dwwieyxh2cqay" path="res://2048/scenes/NumberDisplay.tscn" id="3_45grk"]
 
 [node name="Block" type="Node2D"]
 z_index = 2
 scale = Vector2(1e-05, 1e-05)
-script = ExtResource("1_d0viq")
+script = ExtResource("1_d0vsd")
 
 [node name="Body" type="Sprite2D" parent="."]
 texture = ExtResource("2_6jnej")
