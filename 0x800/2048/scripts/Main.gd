@@ -3,7 +3,8 @@ class_name Main
 static var SELF:Main
 
 static var GameSave:Dictionary = {
-	"HighScore": 0
+	"HighScore": 0,
+	"IsSoundEnable": true
 }
 
 signal add_score(score:int)
@@ -21,6 +22,7 @@ enum INPUT_DIRECTION{
 
 const UI_COLOR_FADINT_RATE:float = 0.5
 const MOUSE_ACTIVE_SPEED: float = 400.0 #鼠标移动被认定为输入操作的灵敏衰减delta倍率，也大概相当于鼠标移动速度。单位不好描述
+const MOUSE_ACTIVE_AREA: Rect2 = Rect2(15.0, 155.0, 330.0, 330.0) #鼠标操作所需的按下位置，遵循视口坐标
 const HEATING_MAX: int = 81
 const COMBO_STACK_HEATING: int = 49
 static var BackgroundTargetColor:Color
@@ -88,7 +90,7 @@ func _ready()->void:
 	add_score.connect(score_update)
 	Node_HighScore.get_node("ScoreDisplay").set_number(GameSave.get("HighScore", 0))
 	Score = 0
-	IsSoundEnable = true
+	IsSoundEnable = GameSave.get("IsSoundEnable", true)
 	start_new_game()
 
 func _process(delta:float)->void:
@@ -97,8 +99,10 @@ func _process(delta:float)->void:
 	var tag_1:bool = node_toward_color(Node_BlocksArea, BlocksAreaTargetColor, delta * UI_COLOR_FADINT_RATE)
 	var scorelabel_color:Color = make_color(TheMaxNumberInPalette, 0.35)
 	var tag_2:bool
+	var tag_4:bool
 	var text_color:Color = make_text_color(scorelabel_color)
 	var tag_3:bool = node_toward_color_with_children(Node_HighScore, text_color, delta * UI_COLOR_FADINT_RATE)
+	tag_4 = Node_SoundButton.color_update(delta * UI_COLOR_FADINT_RATE, scorelabel_color, text_color)
 	if (GlobalState != GLOBAL_STATE.GAME_OVER):
 		tag_2 = Node_ScoreLabel.color_update(delta * UI_COLOR_FADINT_RATE, scorelabel_color, text_color)
 		#tag_2 = true
@@ -107,8 +111,8 @@ func _process(delta:float)->void:
 	match GlobalState: #匹配全局状态
 		GLOBAL_STATE.STARTING: #全局状态-新游戏启动动画
 			Node_TipBlock.set_scale(Node_TipBlock.get_scale().move_toward(Vector2.ZERO, delta * Block.ZOOM_SPEED))
-			var tag_4: bool = (Node_TipBlock.get_scale().x <= 0.01)
-			if (tag_0 and tag_1 and tag_2 and tag_4): #如果背景均变色完毕
+			var tag_5: bool = (Node_TipBlock.get_scale().x <= 0.01)
+			if (tag_0 and tag_1 and tag_2 and tag_4 and tag_5): #如果背景均变色完毕
 				Node_BlocksArea.new_block(BlocksArea.get_empty_pos(Node_BlocksArea.RealPalette), 1) #生成新方块
 				GlobalState = GLOBAL_STATE.SPAWNING #更改全局状态为方块移动中
 				Node_TipBlock.set_process(true)
@@ -146,7 +150,7 @@ func _process(delta:float)->void:
 				else:
 					try_save_score()
 					GlobalState = GLOBAL_STATE.GAME_OVER
-					SfxManager.add_queue(SfxManager.SOUND_LIST.PianoDown)
+					SfxManager.add_queue(SfxManager.SOUND_LIST.BaDumTss)
 		GLOBAL_STATE.WAITING: #全局状态-等待玩家输入
 			var input_direction:int = -1
 			var mouse_angle:float = rad_to_deg(MouseInput_Output.angle())
@@ -187,9 +191,10 @@ func _notification(what:int)-> void:
 
 func sound_switch()-> void:
 	IsSoundEnable = !IsSoundEnable
+	GameSave["IsSoundEnable"] = IsSoundEnable
 	emit_signal("global_switch_dark_color") #主要是让不会每刻更改颜色的节点刷新一下存储的颜色，其余的就是更改颜色生成方法输出的颜色
 	BackgroundTargetColor = make_color(Main.TheMaxNumberInPalette, 0.25)
-	BlocksAreaTargetColor = Main.make_text_color(BackgroundTargetColor)
+	BlocksAreaTargetColor = Main.make_area_color(BackgroundTargetColor)
 
 func spawn_float_number(stack_count: int) -> void:
 	var float_number_ins:Node2D = Prefab_FloatNumber.instantiate()
@@ -209,7 +214,7 @@ func start_new_game() -> void:
 	TheMinNumberShouldSpawn = 1
 	NumberDownRoundCounter = 20
 	BackgroundTargetColor = make_color(0, 0.25)
-	BlocksAreaTargetColor = make_text_color(BackgroundTargetColor)
+	BlocksAreaTargetColor = make_area_color(BackgroundTargetColor)
 	try_save_score()
 	Node_HighScore.get_node("ScoreDisplay").set_number(GameSave.get("HighScore", 0))
 	Score = 0
@@ -220,14 +225,13 @@ func start_new_game() -> void:
 	TipBlockNumber = 1
 	Node_TipBlock.reinit()
 	HadSpawnLowLevelBlock = true
-	SfxManager.add_queue(SfxManager.SOUND_LIST.PianoUp)
+	SfxManager.add_queue(SfxManager.SOUND_LIST.WaterDrop)
 
 #尝试保存分数，可以自由调用。如果当前游戏分数大于内存中的存档最高分，则会保存分数并写入硬盘
 func try_save_score() -> void:
 	if (Score > GameSave.get("HighScore", 2147483647)):
-		print("save score!")
 		GameSave["HighScore"] = Score
-		load_save(true)
+	load_save(true)
 
 #单次鼠标处理，直接引用动态变量
 func mouse_handle_once(delta: float) -> void:
@@ -241,6 +245,8 @@ func mouse_handle_once(delta: float) -> void:
 		else: #上一刻没按左键，意味着是从这一刻开始按的
 			MouseInput_StartPos = get_viewport().get_mouse_position() #开始坐标=当前坐标
 			MouseInput_Output = Vector2(0.0, 0.0) #输出=0,0
+			if (!MOUSE_ACTIVE_AREA.has_point(MouseInput_StartPos)):
+				MouseInput_IsNeedReclick = true
 		MouseInput_IsLastTickClicking = true #记录本刻按了左键，以供后续使用
 		MouseInput_StartPos = MouseInput_StartPos.move_toward(PosNow, delta * MOUSE_ACTIVE_SPEED)
 	else: #如果没按左键
@@ -294,12 +300,20 @@ static func make_color(number:int, saturation:float = 0.5)-> Color:
 		var v:float = absf((fmod(2.0 * x, 2.0) - 1.0) * b) + a - 0.5 * b
 		return Color.from_hsv(0, 0, v)
 
-static func make_text_color(background_color:Color)-> Color:
+static func make_area_color(background_color:Color)-> Color:
 	if (background_color.v > 0.5):
 		return background_color.darkened(0.5)
 	else:
 		if (!IsSoundEnable):
 			return background_color.darkened(0.75)
+		return background_color.lightened(0.5)
+
+static func make_text_color(background_color:Color)-> Color:
+	if (background_color.v > 0.5):
+		return background_color.darkened(0.5)
+	else:
+		if (!IsSoundEnable):
+			return background_color.lightened(0.75)
 		return background_color.lightened(0.5)
 
 #读取存档，引入true时表示从Main中的游戏数据变量写入至存档
@@ -311,6 +325,7 @@ static func load_save(save_instead_load:bool = false)-> void:
 			if (not FileAccess.file_exists("./high_score.dat")):
 				return
 			var file_access:FileAccess = FileAccess.open_compressed("./high_score.dat", FileAccess.READ, FileAccess.COMPRESSION_ZSTD)
+			#var file_access:FileAccess = FileAccess.open("./high_score.dat", FileAccess.READ)
 			var json_instance = JSON.new()
 			var is_ok:Error = json_instance.parse(file_access.get_as_text(true))
 			if (is_ok == OK):
@@ -319,6 +334,7 @@ static func load_save(save_instead_load:bool = false)-> void:
 				push_error(is_ok)
 		true: #内存保存至硬盘
 			var file_access:FileAccess = FileAccess.open_compressed("./high_score.dat", FileAccess.WRITE, FileAccess.COMPRESSION_ZSTD)
+			#var file_access:FileAccess = FileAccess.open("./high_score.dat", FileAccess.WRITE)
 			file_access.store_line(JSON.stringify(GameSave, "", true, false))
 
 #手动按按键print，用于防止每刻都输出的print刷屏

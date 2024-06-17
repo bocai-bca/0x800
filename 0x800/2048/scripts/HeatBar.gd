@@ -32,16 +32,52 @@ func _ready() -> void:
 	FlashingTimer = 0.0
 
 func _process(delta: float) -> void:
+	if (Main.IsSoundEnable):
+		CurrentColorMin = Color(
+			move_toward(CurrentColorMin.r, COLOR_MIN.r, delta),
+			move_toward(CurrentColorMin.g, COLOR_MIN.g, delta),
+			move_toward(CurrentColorMin.b, COLOR_MIN.b, delta)
+		)
+		CurrentColorBound = Color(
+			move_toward(CurrentColorBound.r, COLOR_BOUND.r, delta),
+			move_toward(CurrentColorBound.g, COLOR_BOUND.g, delta),
+			move_toward(CurrentColorBound.b, COLOR_BOUND.b, delta)
+		)
+	else:
+		CurrentColorMin = Color(
+			move_toward(CurrentColorMin.r, COLOR_GRAY_MIN.r, delta),
+			move_toward(CurrentColorMin.g, COLOR_GRAY_MIN.g, delta),
+			move_toward(CurrentColorMin.b, COLOR_GRAY_MIN.b, delta)
+		)
+		CurrentColorBound = Color(
+			move_toward(CurrentColorBound.r, COLOR_GRAY_BOUND.r, delta),
+			move_toward(CurrentColorBound.g, COLOR_GRAY_BOUND.g, delta),
+			move_toward(CurrentColorBound.b, COLOR_GRAY_BOUND.b, delta)
+		)
 	var is_line_lighting:bool = false
 	if (Line.modulate == CurrentColorLight):
 		is_line_lighting = true
+	if (Main.IsSoundEnable):
+		CurrentColorLight = Color(
+			move_toward(CurrentColorLight.r, COLOR_LIGHT.r, delta),
+			move_toward(CurrentColorLight.g, COLOR_LIGHT.g, delta),
+			move_toward(CurrentColorLight.b, COLOR_LIGHT.b, delta)
+		)
+	else:
+		CurrentColorLight = Color(
+			move_toward(CurrentColorLight.r, COLOR_GRAY_LIGHT.r, delta),
+			move_toward(CurrentColorLight.g, COLOR_GRAY_LIGHT.g, delta),
+			move_toward(CurrentColorLight.b, COLOR_GRAY_LIGHT.b, delta)
+		)
 	Line.set_modulate(CurrentColorMin.lerp(CurrentColorBound, float(clampi(Main.Heating, 0, Main.COMBO_STACK_HEATING)) / float(Main.COMBO_STACK_HEATING)))
 	if (Main.Heating >= Main.COMBO_STACK_HEATING):
 		var a: int = clampi(Main.HEATING_MAX - Main.Heating, 2, Main.HEATING_MAX)
 		if (fmod(FlashingTimer, a) <= float(a / 2.0)):
-			if (!is_line_lighting and PlayingState == PLAYING_STATE.SMOOTH_STEP):
+			if (!is_line_lighting and PlayingState == PLAYING_STATE.SMOOTH_STEP and Main.GlobalState != Main.GLOBAL_STATE.GAME_OVER):
 				SfxManager.add_queue(SfxManager.SOUND_LIST.Alarm)
-			Line.set_modulate(COLOR_LIGHT)
+			else:
+				SfxManager.clear_queue(SfxManager.SOUND_LIST.Alarm)
+			Line.set_modulate(CurrentColorLight)
 		FlashingTimer = fmod(FlashingTimer + delta * 10.0, 4 * a)
 	match PlayingState:
 		PLAYING_STATE.SMOOTH_STEP:

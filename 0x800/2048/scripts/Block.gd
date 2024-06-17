@@ -88,7 +88,7 @@ func add_effect(add_number:bool = true, override_number: int = 0)-> void:
 			Main.TheMaxNumberInPalette = now_number
 			Main.Node_Background.set_self_modulate(Color(1.0, 1.0, 1.0, 1.0))
 			Main.BackgroundTargetColor = Main.make_color(Main.TheMaxNumberInPalette, 0.25)
-			Main.BlocksAreaTargetColor = Main.make_text_color(Main.BackgroundTargetColor)
+			Main.BlocksAreaTargetColor = Main.make_area_color(Main.BackgroundTargetColor)
 		Main.SELF.emit_signal("add_score", Number)
 
 #清除

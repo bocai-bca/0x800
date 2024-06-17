@@ -3,8 +3,8 @@ class_name SfxManager
 
 enum SOUND_LIST {
 	Bubble = 0,
-	PianoUp = 1,
-	PianoDown = 2,
+	WaterDrop = 1,
+	BaDumTss = 2,
 	Alarm = 3,
 	Doh = 4
 }
@@ -14,15 +14,15 @@ static var BubbleQueue:int = 0
 static var BubblePlayAgo:float = 0.0
 const BubblePlayInterval:float = 0.075
 
-@onready var PianoUp:AudioStreamPlayer = $PianoUp
-static var PianoUpQueue:int = 0
-static var PianoUpPlayAgo:float = 0.0
-const PianoUpPlayInterval:float = 0.3
+@onready var WaterDrop:AudioStreamPlayer = $WaterDrop
+static var WaterDropQueue:int = 0
+static var WaterDropPlayAgo:float = 0.0
+const WaterDropPlayInterval:float = 0.3
 
-@onready var PianoDown:AudioStreamPlayer = $PianoDown
-static var PianoDownQueue:int = 0
-static var PianoDownPlayAgo:float = 0.0
-const PianoDownPlayInterval:float = 0.3
+@onready var BaDumTss:AudioStreamPlayer = $BaDumTss
+static var BaDumTssQueue:int = 0
+static var BaDumTssPlayAgo:float = 0.0
+const BaDumTssPlayInterval:float = 0.3
 
 @onready var Alarm:AudioStreamPlayer = $Alarm
 static var AlarmQueue:int = 0
@@ -37,8 +37,8 @@ const DohPlayInterval:float = 0.01
 func _process(delta:float)-> void:
 	var _0:bool = Main.IsSoundEnable
 	BubblePlayAgo = move_toward(BubblePlayAgo, BubblePlayInterval, delta)
-	PianoUpPlayAgo = move_toward(PianoUpPlayAgo, PianoUpPlayInterval, delta)
-	PianoDownPlayAgo = move_toward(PianoDownPlayAgo, PianoDownPlayInterval, delta)
+	WaterDropPlayAgo = move_toward(WaterDropPlayAgo, WaterDropPlayInterval, delta)
+	BaDumTssPlayAgo = move_toward(BaDumTssPlayAgo, BaDumTssPlayInterval, delta)
 	AlarmPlayAgo = move_toward(AlarmPlayAgo, AlarmPlayInterval, delta)
 	DohPlayAgo = move_toward(DohPlayAgo, DohPlayInterval, delta)
 	if (BubbleQueue >= 1 and BubblePlayAgo >= BubblePlayInterval):
@@ -47,16 +47,17 @@ func _process(delta:float)-> void:
 		if (_0):
 			Bubble.set_pitch_scale(randf_range(0.7, 1.3))
 			Bubble.play()
-	if (PianoUpQueue >= 1 and PianoUpPlayAgo >= PianoUpPlayInterval):
-		PianoUpPlayAgo = 0.0
-		PianoUpQueue -= 1
+	if (WaterDropQueue >= 1 and WaterDropPlayAgo >= WaterDropPlayInterval):
+		WaterDropPlayAgo = 0.0
+		WaterDropQueue -= 1
 		if (_0):
-			PianoUp.play()
-	if (PianoDownQueue >= 1 and PianoDownPlayAgo >= PianoDownPlayInterval):
-		PianoDownPlayAgo = 0.0
-		PianoDownQueue -= 1
+			WaterDrop.set_pitch_scale(randf_range(0.8, 1.2))
+			WaterDrop.play()
+	if (BaDumTssQueue >= 1 and BaDumTssPlayAgo >= BaDumTssPlayInterval):
+		BaDumTssPlayAgo = 0.0
+		BaDumTssQueue -= 1
 		if (_0):
-			PianoDown.play()
+			BaDumTss.play()
 	if (AlarmQueue >= 1 and AlarmPlayAgo >= AlarmPlayInterval):
 		AlarmPlayAgo = 0.0
 		AlarmQueue -= 1
@@ -74,10 +75,10 @@ static func add_queue(sound_id:int)-> void:
 	match sound_id:
 		SOUND_LIST.Bubble:
 			BubbleQueue += 1
-		SOUND_LIST.PianoUp:
-			PianoUpQueue += 1
-		SOUND_LIST.PianoDown:
-			PianoDownQueue += 1
+		SOUND_LIST.WaterDrop:
+			WaterDropQueue = 1
+		SOUND_LIST.BaDumTss:
+			BaDumTssQueue = 1
 		SOUND_LIST.Alarm:
 			AlarmQueue += 1
 		SOUND_LIST.Doh:
@@ -87,10 +88,10 @@ static func clear_queue(sound_id:int)-> void:
 	match sound_id:
 		SOUND_LIST.Bubble:
 			BubbleQueue = 0
-		SOUND_LIST.PianoUp:
-			PianoUpQueue = 0
-		SOUND_LIST.PianoDown:
-			PianoDownQueue = 0
+		SOUND_LIST.WaterDrop:
+			WaterDropQueue = 0
+		SOUND_LIST.BaDumTss:
+			BaDumTssQueue = 0
 		SOUND_LIST.Alarm:
 			AlarmQueue = 0
 		SOUND_LIST.Doh:

@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://cuph2xwpxikf3"]
+[gd_scene load_steps=21 format=3 uid="uid://cuph2xwpxikf3"]
 
 [ext_resource type="Script" path="res://2048/scripts/Main.gd" id="1_5thdn"]
 [ext_resource type="Texture2D" uid="uid://bxbnx83el7oi1" path="res://2048/textures/white.png" id="2_42bvx"]
@@ -14,13 +14,12 @@
 [ext_resource type="Texture2D" uid="uid://rro0rg7ww01c" path="res://2048/textures/sound_button_1.png" id="10_g3ex4"]
 [ext_resource type="PackedScene" uid="uid://dqyg8q6fjelnx" path="res://2048/scenes/HeatBar.tscn" id="10_ga7pf"]
 [ext_resource type="PackedScene" uid="uid://bk5ru1uwi230q" path="res://2048/scenes/Blocks.tscn" id="11_phg7y"]
-[ext_resource type="Texture2D" uid="uid://jra5l10ipgnq" path="res://2048/textures/sound_icon.png" id="12_8vo4g"]
 [ext_resource type="AudioStream" uid="uid://c3bpadi7omd2m" path="res://2048/sounds/bubble.wav" id="12_iwpyx"]
 [ext_resource type="Script" path="res://2048/scripts/SfxManager.gd" id="12_y1umk"]
+[ext_resource type="AudioStream" uid="uid://dfqviptafwtrg" path="res://2048/sounds/piano_up.wav" id="15_f0wch"]
 [ext_resource type="AudioStream" uid="uid://31ul4jynl7er" path="res://2048/sounds/alarm.wav" id="16_hcvf2"]
 [ext_resource type="AudioStream" uid="uid://c0w14hq4mpt3p" path="res://2048/sounds/ba_dum_tss.wav" id="17_573v7"]
 [ext_resource type="AudioStream" uid="uid://difm3uyjwecu5" path="res://2048/sounds/doh.wav" id="17_j8qg7"]
-[ext_resource type="AudioStream" uid="uid://cfincgo3fjhv4" path="res://2048/sounds/water_drop.wav" id="18_65eh3"]
 
 [node name="Screen" type="Node2D"]
 z_index = 100
@@ -89,8 +88,6 @@ texture_normal = ExtResource("9_of304")
 texture_pressed = ExtResource("10_g3ex4")
 
 [node name="Icon" type="Sprite2D" parent="SoundButton"]
-texture = ExtResource("12_8vo4g")
-offset = Vector2(0, -30)
 
 [node name="HighScore" type="Sprite2D" parent="."]
 z_index = 300
@@ -113,30 +110,36 @@ position = Vector2(1113.33, 0)
 scale = Vector2(6.66667e-05, 6.66667e-05)
 
 [node name="Marker2D" type="Marker2D" parent="."]
-position = Vector2(-165, -165)
+position = Vector2(-10, -20)
 
 [node name="SfxManager" type="Node" parent="."]
 script = ExtResource("12_y1umk")
 
 [node name="Bubble" type="AudioStreamPlayer" parent="SfxManager"]
 stream = ExtResource("12_iwpyx")
+mix_target = 1
 max_polyphony = 5
 
 [node name="BaDumTss" type="AudioStreamPlayer" parent="SfxManager"]
 stream = ExtResource("17_573v7")
-volume_db = 2.0
-max_polyphony = 2
+volume_db = -12.0
+mix_target = 1
+max_polyphony = 3
 
-[node name="WaterDrop" type="AudioStreamPlayer" parent="SfxManager"]
-stream = ExtResource("18_65eh3")
+[node name="PianoUp" type="AudioStreamPlayer" parent="SfxManager"]
+stream = ExtResource("15_f0wch")
+volume_db = -12.0
+mix_target = 1
 max_polyphony = 3
 
 [node name="Alarm" type="AudioStreamPlayer" parent="SfxManager"]
 stream = ExtResource("16_hcvf2")
-volume_db = -18.0
+volume_db = -12.0
+mix_target = 1
 max_polyphony = 5
 
 [node name="Doh" type="AudioStreamPlayer" parent="SfxManager"]
 stream = ExtResource("17_j8qg7")
 volume_db = -12.0
+mix_target = 1
 max_polyphony = 10

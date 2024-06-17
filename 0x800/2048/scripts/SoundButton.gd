@@ -14,3 +14,8 @@ func button_down()-> void:
 
 func button_up()-> void:
 	Node_Icon.set_position(Vector2.ZERO)
+
+func color_update(delta:float, In_Button:Color, In_Score:Color)-> bool:
+	var _0:bool = Main.node_toward_color(Node_Button, In_Button, delta)
+	var _1:bool = Main.node_toward_color(Node_Icon, In_Score, delta)
+	return (_0 and _1)

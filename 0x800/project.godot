@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="0x800!"
-config/version="1001"
+config/version="1003"
 run/main_scene="res://2048/scenes/Main.tscn"
 config/features=PackedStringArray("4.2", "GL Compatibility")
 boot_splash/bg_color=Color(1, 1, 1, 1)
@@ -22,7 +22,7 @@ config/icon="res://icon.svg"
 
 window/size/viewport_width=360
 window/size/viewport_height=640
-window/stretch/mode="canvas_items"
+window/stretch/mode="viewport"
 
 [input]
 
