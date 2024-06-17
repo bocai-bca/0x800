@@ -6,6 +6,12 @@ signal heat_bar_touched_top()
 const COLOR_MIN: Color = Color(0.8, 0.48, 0.48, 1.0)
 const COLOR_BOUND: Color = Color(0.8, 0.0, 0.0, 1.0)
 const COLOR_LIGHT: Color = Color(1.0, 0.0, 0.0, 1.0)
+const COLOR_GRAY_MIN: Color = Color(0.7, 0.7, 0.7, 1.0)
+const COLOR_GRAY_BOUND: Color = Color(0.5, 0.5, 0.5, 1.0)
+const COLOR_GRAY_LIGHT: Color = Color(0.35, 0.35, 0.35, 1.0)
+var CurrentColorMin: Color = Color(1.0, 1.0, 1.0, 1.0)
+var CurrentColorBound: Color = Color(1.0, 1.0, 1.0, 1.0)
+var CurrentColorLight: Color = Color(1.0, 1.0, 1.0, 1.0)
 const LINE_WIDTH: float = 1536.0
 const SMOOTH_STEP_SPEED: float = 0.1618
 var NowDegree: float #0-1
@@ -27,9 +33,9 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	var is_line_lighting:bool = false
-	if (Line.modulate == COLOR_LIGHT):
+	if (Line.modulate == CurrentColorLight):
 		is_line_lighting = true
-	Line.set_modulate(COLOR_MIN.lerp(COLOR_BOUND, float(clampi(Main.Heating, 0, Main.COMBO_STACK_HEATING)) / float(Main.COMBO_STACK_HEATING)))
+	Line.set_modulate(CurrentColorMin.lerp(CurrentColorBound, float(clampi(Main.Heating, 0, Main.COMBO_STACK_HEATING)) / float(Main.COMBO_STACK_HEATING)))
 	if (Main.Heating >= Main.COMBO_STACK_HEATING):
 		var a: int = clampi(Main.HEATING_MAX - Main.Heating, 2, Main.HEATING_MAX)
 		if (fmod(FlashingTimer, a) <= float(a / 2.0)):
